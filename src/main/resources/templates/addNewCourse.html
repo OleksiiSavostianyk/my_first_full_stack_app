@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Course Registration</title>
+    <link rel="stylesheet" href="/static/css/styles.css">
+    <!-- Мета-теги для CSRF токена -->
+    <meta name="_csrf" content="${_csrf.token}">
+    <meta name="_csrf_header" content="${_csrf.headerName}">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: black; /* Черный фон для страницы */
+            color: white; /* Белый цвет текста */
+        }
+        .container {
+            width: 100%;
+            max-width: 600px;
+            padding: 20px;
+            border-radius: 10px;
+            background-color: #333; /* Темный фон для контейнера */
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+            text-align: center;
+        }
+        h2 {
+            margin-bottom: 20px;
+            color: #f4f4f4; /* Светлый цвет для заголовка */
+        }
+        .form-group {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #f4f4f4; /* Светлый цвет для меток */
+        }
+        input, textarea {
+            width: calc(100% - 22px); /* Полная ширина минус отступы и граница */
+            padding: 10px;
+            border: 1px solid #555; /* Темная граница для полей */
+            border-radius: 5px;
+            box-sizing: border-box; /* Убедитесь, что отступы включены в ширину */
+            background-color: #222; /* Темный фон для полей */
+            color: white; /* Белый цвет текста в полях */
+        }
+        textarea {
+            height: 100px;
+            resize: vertical; /* Разрешить только вертикальное изменение размера */
+        }
+        button {
+            width: 100%;
+            padding: 15px;
+            font-size: 16px;
+            color: white;
+            background-color: #007bff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        #result {
+            margin-top: 20px;
+            font-size: 16px;
+            font-weight: bold;
+        }
+
+        /* Стили для кнопки MENU */
+        .menu-button {
+            position: fixed;
+            top: 20px;
+            width: 200px;
+            left:1500px;
+            right: 20px;
+            padding: 10px 20px;
+            font-size: 20px;
+            color: white;
+            background-color: #007bff;
+            border: none;
+            border-radius: 30px; /* Закругленные края */
+            cursor: pointer;
+            transition: background-color 0.3s;
+            z-index: 1000; /* Убедиться, что кнопка поверх всего остального */
+        }
+        .menu-button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+<!-- Кнопка MENU -->
+<button class="menu-button" id="menuButton">MENU</button>
+
+<div class="container">
+    <h2>Register a Course</h2>
+    <form id="courseForm">
+        <!-- Поля формы -->
+        <div class="form-group">
+            <label for="courseName">Course Name:</label>
+            <input type="text" id="courseName" name="courseName" required>
+        </div>
+        <div class="form-group">
+            <label for="description">Description:</label>
+            <textarea id="description" name="description" required></textarea>
+        </div>
+        <div class="form-group">
+            <label for="startDate">Start Date:</label>
+            <input type="date" id="startDate" name="startDate" required>
+        </div>
+        <div class="form-group">
+            <label for="endDate">End Date:</label>
+            <input type="date" id="endDate" name="endDate" required>
+        </div>
+        <button type="submit">Submit</button>
+    </form>
+    <div id="result"></div>
+</div>
+
+<script>
+    // Добавляем обработчик клика на кнопку MENU
+    document.getElementById('menuButton').addEventListener('click', function() {
+        window.location.href = 'http://localhost:8080/petProject/api/v2/menu/view';
+    });
+
+    document.getElementById('courseForm').addEventListener('submit', function(event) {
+        event.preventDefault(); // Предотвратить стандартное действие формы
+
+        // Собираем данные из формы
+        const courseName = document.getElementById('courseName').value;
+        const description = document.getElementById('description').value;
+        const startDate = document.getElementById('startDate').value;
+        const endDate = document.getElementById('endDate').value;
+
+        // Создаем объект данных
+        const courseData = {
+            courseName: courseName,
+            description: description,
+            startDate: startDate,
+            endDate: endDate,
+            students: [],
+            teachers: []
+        };
+
+        // Получаем CSRF-токен из куки
+        const csrfToken = document.cookie.split('; ')
+            .find(row => row.startsWith('XSRF-TOKEN='))
+            ?.split('=')[1];
+
+        // Отправляем данные на сервер
+        fetch('http://localhost:8080/petProject/api/admin/add/new/course', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-XSRF-TOKEN': csrfToken // Добавляем CSRF-токен в заголовок
+            },
+            body: JSON.stringify(courseData)
+        })
+            .then(response => {
+                if (response.ok) {
+                    return response.text();
+                } else {
+                    return response.text().then(errorText => {
+                        throw new Error(errorText);
+                    });
+                }
+            })
+            .then(resultText => {
+                document.getElementById('result').innerText = 'Course registered successfully!';
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                document.getElementById('result').innerText = 'An error occurred while registering the course.';
+            });
+    });
+</script>
+</body>
+</html>

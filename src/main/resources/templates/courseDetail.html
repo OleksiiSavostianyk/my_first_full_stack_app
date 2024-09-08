@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Course Details</title>
+    <link rel="stylesheet" href="/styles/main.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: black; /* Черный фон */
+            color: white; /* Белый текст */
+        }
+        .container {
+            max-width: 1200px; /* Увеличенная ширина контейнера */
+            margin: 40px auto; /* Увеличенные отступы сверху и снизу */
+            padding: 40px; /* Увеличенный отступ внутри контейнера */
+            background-color: #1e1e1e; /* Темное окно */
+            border-radius: 12px; /* Увеличенный радиус скругления углов */
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.5); /* Увеличенная тень */
+        }
+        h1 {
+            text-align: center;
+            color: #007bff; /* Синие заголовки */
+            font-size: 36px; /* Увеличенный размер заголовка */
+            margin-bottom: 30px; /* Увеличенный отступ снизу */
+        }
+        .course-details p {
+            margin: 15px 0; /* Увеличенный отступ между абзацами */
+            font-size: 18px; /* Увеличенный размер шрифта */
+        }
+        .btn-group {
+            display: flex;
+            justify-content: center;
+            gap: 20px; /* Увеличенное расстояние между кнопками */
+            margin-top: 30px; /* Увеличенный отступ сверху */
+        }
+        .btn {
+            background-color: #007bff;
+            color: white;
+            padding: 15px 30px; /* Увеличенный размер кнопок */
+            font-size: 18px; /* Увеличенный размер шрифта */
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: bold;
+            transition: background-color 0.3s; /* Плавное изменение цвета фона при наведении */
+        }
+        .btn:hover {
+            background-color: #0056b3;
+        }
+        .btn-back {
+            background-color: #6c757d;
+        }
+        .btn-back:hover {
+            background-color: #5a6268;
+        }
+
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>Course Details</h1>
+    <div id="course-details" class="course-details">
+        <!-- Данные о курсе будут загружены сюда с помощью JavaScript -->
+    </div>
+    <div class="btn-group">
+        <a id="register-btn" class="btn">Register</a>
+        <a href="http://localhost:8080/petProject/api/v2/menu/view" class="btn">Menu</a>
+        <a href="javascript:history.back()" class="btn btn-back">Back</a>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const courseId = [[${courseId}]]; // Вставляем переданный courseId из модели
+        const courseDetailsContainer = document.getElementById('course-details');
+        const registerBtn = document.getElementById('register-btn');
+
+        // Функция для получения данных о курсе
+        function fetchCourseDetails() {
+            fetch(`http://localhost:8080/petProject/api/course/${courseId}/details`)
+                .then(response => {
+                    if (response.ok) {
+                        return response.json();
+                    } else if (response.status === 401) {
+                        window.location.href = 'http://localhost:8080/petProject/api/v2/menu/view';
+                        throw new Error('Unauthorized');
+                    } else {
+                        return response.text().then(text => { throw new Error(text); });
+                    }
+                })
+                .then(data => {
+                    if (data) {
+                        courseDetailsContainer.innerHTML = `
+                            <p><strong>Course Name:</strong> ${data.courseName}</p>
+                            <p><strong>Description:</strong> ${data.description}</p>
+                            <p><strong>Start Date:</strong> ${data.startDate}</p>
+                            <p><strong>End Date:</strong> ${data.endDate}</p>
+                            <p><strong>Students Enrolled:</strong></p>
+                            <ul>${data.students.map(student => `<li>${student.name}</li>`).join('')}</ul>
+                            <p><strong>Teachers:</strong></p>
+                            <ul>${data.teachers.map(teacher => `<li>${teacher.name}</li>`).join('')}</ul>
+                        `;
+
+                        // Устанавливаем ссылку для кнопки регистрации
+                        registerBtn.href = `http://localhost:8080/petProject/api/v2/courseRegister/${courseId}`;
+                    }
+                })
+                .catch(error => console.error('Error fetching course details:', error));
+        }
+
+        fetchCourseDetails();
+    });
+</script>
+</body>
+</html>
+
+
+
+
+<!--<!DOCTYPE html>-->
+<!--<html lang="en">-->
+<!--<head>-->
+<!--    <meta charset="UTF-8">-->
+<!--    <meta name="viewport" content="width=device-width, initial-scale=1.0">-->
+<!--    <title>Course Details</title>-->
+<!--    <link rel="stylesheet" href="/styles/main.css"> &lt;!&ndash; Подключите ваш CSS файл &ndash;&gt;-->
+<!--    <style>-->
+<!--        body {-->
+<!--            font-family: Arial, sans-serif;-->
+<!--            background-color: #f4f4f4;-->
+<!--            margin: 0;-->
+<!--            padding: 0;-->
+<!--        }-->
+<!--        .container {-->
+<!--            max-width: 800px;-->
+<!--            margin: 20px auto;-->
+<!--            padding: 20px;-->
+<!--            background: white;-->
+<!--            border-radius: 8px;-->
+<!--            box-shadow: 0 0 10px rgba(0,0,0,0.1);-->
+<!--        }-->
+<!--        h1 {-->
+<!--            text-align: center;-->
+<!--            color: #333;-->
+<!--        }-->
+<!--        .course-details p {-->
+<!--            margin: 10px 0;-->
+<!--        }-->
+<!--        .btn-group {-->
+<!--            display: flex;-->
+<!--            justify-content: center;-->
+<!--            gap: 10px;-->
+<!--            margin-top: 20px;-->
+<!--        }-->
+<!--        .btn {-->
+<!--            background-color: #007bff;-->
+<!--            color: white;-->
+<!--            padding: 10px 20px;-->
+<!--            text-decoration: none;-->
+<!--            border-radius: 5px;-->
+<!--            font-weight: bold;-->
+<!--        }-->
+<!--        .btn:hover {-->
+<!--            background-color: #0056b3;-->
+<!--        }-->
+<!--        .btn-back {-->
+<!--            background-color: #6c757d;-->
+<!--        }-->
+<!--        .btn-back:hover {-->
+<!--            background-color: #5a6268;-->
+<!--        }-->
+<!--    </style>-->
+<!--</head>-->
+<!--<body>-->
+<!--<div class="container">-->
+<!--    <h1>Course Details</h1>-->
+<!--    <div id="course-details" class="course-details">-->
+<!--        &lt;!&ndash; Данные о курсе будут загружены сюда с помощью JavaScript &ndash;&gt;-->
+<!--    </div>-->
+<!--    <div class="btn-group">-->
+<!--        <a id="register-btn" class="btn">Register</a>-->
+<!--        <a href="/api/v2/menu/view" class="btn">Menu</a>-->
+<!--        <a href="javascript:history.back()" class="btn btn-back">Back</a>-->
+<!--    </div>-->
+<!--</div>-->
+
+<!--<script>-->
+<!--    document.addEventListener('DOMContentLoaded', function() {-->
+<!--        const courseId = window.location.pathname.split('/')[2]; // Получаем ID курса из URL-->
+<!--        const courseDetailsContainer = document.getElementById('course-details');-->
+<!--        const registerBtn = document.getElementById('register-btn');-->
+
+<!--        // Функция для получения данных о курсе-->
+<!--        function fetchCourseDetails() {-->
+<!--            fetch(`http://localhost:8080/petProject/api/v2/course/${courseId}`)-->
+<!--                .then(response => {-->
+<!--                    if (response.ok) {-->
+<!--                        return response.json();-->
+<!--                    } else if (response.status === 401) {-->
+<!--                        window.location.href = 'http://localhost:8080/petProject/api/v2/menu/view'; // Перенаправление на страницу меню при неавторизованности-->
+<!--                        throw new Error('Unauthorized');-->
+<!--                    } else {-->
+<!--                        return response.text().then(text => { throw new Error(text); });-->
+<!--                    }-->
+<!--                })-->
+<!--                .then(data => {-->
+<!--                    if (data) {-->
+<!--                        courseDetailsContainer.innerHTML = `-->
+<!--                            <p><strong>Course Name:</strong> ${data.courseName}</p>-->
+<!--                            <p><strong>Description:</strong> ${data.description}</p>-->
+<!--                            <p><strong>Start Date:</strong> ${data.startDate}</p>-->
+<!--                            <p><strong>End Date:</strong> ${data.endDate}</p>-->
+<!--                            <p><strong>Students Enrolled:</strong></p>-->
+<!--                            <ul>${data.students.map(student => `<li>${student.name}</li>`).join('')}</ul>-->
+<!--                            <p><strong>Teachers:</strong></p>-->
+<!--                            <ul>${data.teachers.map(teacher => `<li>${teacher.name}</li>`).join('')}</ul>-->
+<!--                        `;-->
+
+<!--                        // Устанавливаем ссылку для кнопки регистрации-->
+<!--                        registerBtn.href = `http://localhost:8080/petProject/api/v2/courseRegister/${courseId}`;-->
+<!--                    }-->
+<!--                })-->
+<!--                .catch(error => console.error('Error fetching course details:', error));-->
+<!--        }-->
+
+<!--        fetchCourseDetails();-->
+<!--    });-->
+<!--</script>-->
+<!--</body>-->
+<!--</html>-->
+
+
+
+<!--<!DOCTYPE html>-->
+<!--<html lang="en">-->
+<!--<head>-->
+<!--    <meta charset="UTF-8">-->
+<!--    <meta name="viewport" content="width=device-width, initial-scale=1.0">-->
+<!--    <title>Course Details</title>-->
+<!--    <link rel="stylesheet" href="/styles/main.css"> &lt;!&ndash; Подключите ваш CSS файл &ndash;&gt;-->
+<!--    <style>-->
+
+<!--    </style>-->
+<!--</head>-->
+<!--<body>-->
+<!--<div class="container">-->
+<!--    <h1>Course Details</h1>-->
+<!--    <div id="course-details" class="course-details">-->
+<!--        &lt;!&ndash; Данные о курсе будут загружены сюда с помощью JavaScript &ndash;&gt;-->
+<!--    </div>-->
+<!--    <div class="btn-group">-->
+<!--        <a id="register-btn" class="btn">Register</a>-->
+<!--        <a href="/api/v2/menu/view" class="btn">Menu</a>-->
+<!--        <a href="javascript:history.back()" class="btn btn-back">Back</a>-->
+<!--    </div>-->
+<!--</div>-->
+
+<!--<script>-->
+<!--    document.addEventListener('DOMContentLoaded', function() {-->
+<!--        const courseId = window.location.pathname.split('/')[2]; // Получаем ID курса из URL-->
+<!--        const courseDetailsContainer = document.getElementById('course-details');-->
+<!--        const registerBtn = document.getElementById('register-btn');-->
+
+<!--        // Функция для получения данных о курсе-->
+<!--        function fetchCourseDetails() {-->
+<!--            fetch(`http://localhost:8080/petProject/api/courseDetails/${courseId}`)-->
+<!--                .then(response => {-->
+<!--                    if (response.status === 401) {-->
+<!--                        window.location.href = 'http://localhost:8080/petProject/api/v2/menu/view'; // Перенаправление на страницу меню при неавторизованности-->
+<!--                        return;-->
+<!--                    }-->
+<!--                    return response.json();-->
+<!--                })-->
+<!--                .then(data => {-->
+<!--                    if (data) {-->
+<!--                        courseDetailsContainer.innerHTML = `-->
+<!--                                <p><strong>Course Name:</strong> ${data.courseName}</p>-->
+<!--                                <p><strong>Description:</strong> ${data.description}</p>-->
+<!--                                <p><strong>Start Date:</strong> ${data.startDate}</p>-->
+<!--                                <p><strong>End Date:</strong> ${data.endDate}</p>-->
+<!--                                <p><strong>Students Enrolled:</strong></p>-->
+<!--                                <ul>${data.students.map(student => `<li>${student.name}</li>`).join('')}</ul>-->
+<!--                                <p><strong>Teachers:</strong></p>-->
+<!--                                <ul>${data.teachers.map(teacher => `<li>${teacher.name}</li>`).join('')}</ul>-->
+<!--                            `;-->
+
+<!--                        // Устанавливаем ссылку для кнопки регистрации-->
+<!--                        registerBtn.href = `http://localhost:8080/petProject/api/v2/courseRegister/${courseId}`;-->
+<!--                    }-->
+<!--                })-->
+<!--                .catch(error => console.error('Error fetching course details:', error));-->
+<!--        }-->
+
+<!--        fetchCourseDetails();-->
+<!--    });-->
+<!--</script>-->
+<!--</body>-->
+<!--</html>-->

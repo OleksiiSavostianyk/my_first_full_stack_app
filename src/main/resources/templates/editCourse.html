@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Course</title>
+    <link rel="stylesheet" href="/static/css/styles.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: black; /* Черный фон */
+            color: white; /* Белый текст */
+        }
+        .container {
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 20px;
+            background-color: #1e1e1e; /* Темное окно */
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+        }
+        h1 {
+            text-align: center;
+            color: #007bff; /* Синий заголовок */
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 10px;
+            font-size: 16px;
+        }
+        input, textarea {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 20px;
+            border-radius: 4px;
+            border: none;
+            background-color: #333;
+            color: white;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            color: white;
+            background-color: #007bff;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>Edit Course</h1>
+
+    <form id="editCourseForm" onsubmit="updateCourse(event)">
+        <label for="courseName">Course Name:</label>
+        <input type="text" id="courseName" name="courseName" required>
+
+        <label for="description">Description:</label>
+        <textarea id="description" name="description" rows="4" required></textarea>
+
+        <label for="startDate">Start Date:</label>
+        <input type="date" id="startDate" name="startDate" required>
+
+        <label for="endDate">End Date:</label>
+        <input type="date" id="endDate" name="endDate" required>
+
+        <button type="submit">Save Changes</button>
+    </form>
+</div>
+
+<script>
+    // Функция для получения данных о курсе
+    async function fetchCourseData() {
+        const courseId = '{{courseId}}'; // Должен быть заменен на фактический идентификатор курса
+        try {
+            const response = await fetch(`http://localhost:8080/petProject/api/get/course/${courseId}`);
+            if (!response.ok) {
+                throw new Error('Failed to fetch course data');
+            }
+            const course = await response.json();
+
+            // Заполняем форму данными курса
+            document.getElementById('courseName').value = course.courseName;
+            document.getElementById('description').value = course.description;
+            document.getElementById('startDate').value = course.startDate;
+            document.getElementById('endDate').value = course.endDate;
+        } catch (error) {
+            console.error('Error fetching course data:', error);
+        }
+    }
+
+    // Функция для отправки обновленных данных курса
+    async function updateCourse(event) {
+        event.preventDefault(); // Предотвращаем перезагрузку страницы
+
+        const courseId = '{{courseId}}'; // Должен быть заменен на фактический идентификатор курса
+        const courseData = {
+            courseName: document.getElementById('courseName').value,
+            description: document.getElementById('description').value,
+            startDate: document.getElementById('startDate').value,
+            endDate: document.getElementById('endDate').value
+        };
+
+        try {
+            const response = await fetch(`http://localhost:8080/petProject/api/admin/update/course/${courseId}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(courseData)
+            });
+
+            if (response.ok) {
+                alert('Course updated successfully');
+                window.location.href = 'http://localhost:8080/petProject/api/v2/admin/view/all/courses'; // Перенаправление на меню
+            } else {
+                alert('Failed to update course');
+            }
+        } catch (error) {
+            console.error('Error updating course:', error);
+            alert('Error updating course');
+        }
+    }
+
+    // Загрузка данных курса при загрузке страницы
+    document.addEventListener('DOMContentLoaded', fetchCourseData);
+</script>
+</body>
+</html>

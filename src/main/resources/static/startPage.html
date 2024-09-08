@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Welcome</title>
+    <link rel="stylesheet" href="/static/css/styles.css"> <!-- Подключите стили при необходимости -->
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: black; /* Black background color for contrast */
+        }
+        .container {
+            text-align: center;
+            margin-top: -350px;
+        }
+        h2, p {
+            color: white; /* Set text color to white */
+        }
+        .button {
+            display: inline-block;
+            margin: 35px;
+            padding: 20px 40px;
+            font-size: 16px;
+            text-decoration: none;
+            color: white;
+            background-color: #007bff;
+            border-radius: 15px;
+            border: none;
+        }
+        .button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h2>Welcome</h2>
+    <p>Choose an action:</p>
+    <a href="http://localhost:8080/petProject/registration.html" class="button">Register</a>
+    <a href="http://localhost:8080/petProject/api/v2/menu/view  " class="button">Login</a>
+</div>
+</body>
+</html>
+
